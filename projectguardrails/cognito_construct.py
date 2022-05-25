@@ -5,18 +5,19 @@ from aws_cdk import (
     custom_resources as cr,
     aws_apigateway as apigw,
     )
-
-
+import random
+import string
 class Cognito(Construct):
 
     
     def __init__(self, scope: Construct, id:str,
         tenant_id_field,
+        bucket_name,
         **kwargs):
         super().__init__(scope,id,**kwargs)
         
         #Creates User Pool
-        self.tenant_userpool = cognito.UserPool(self, "tenants-user-pool",
+        self.tenant_userpool = cognito.UserPool(self, "tenants-userpool",
         user_pool_name = "tenants",
         custom_attributes = {
             tenant_id_field :cognito.NumberAttribute(min=1, max=999, mutable=False)
@@ -26,8 +27,8 @@ class Cognito(Construct):
         
 
         #Populates User Pool with Mock Data
-        populate_userpool = cr.AwsCustomResource(
-            self, "populate-tenant-userpool_with_mock",
+        populate_userpool_with_tenant = cr.AwsCustomResource(
+            self, "populate-tenant-userpool_with_mock_tenant",
             on_create = cr.AwsSdkCall(
                 service = "CognitoIdentityServiceProvider",
                 action = "adminCreateUser",
@@ -62,7 +63,7 @@ class Cognito(Construct):
         )
         
         #Adding app client ot user pool
-        self.tenant_userpool.add_client("app-client",
+        userpool_client = self.tenant_userpool.add_client("app-client",
             o_auth=cognito.OAuthSettings(
                 flows=cognito.OAuthFlows(
                     implicit_code_grant=True
@@ -72,11 +73,12 @@ class Cognito(Construct):
             )
             
         )
-        
+
+
         #Add Domain For Hosted UI
         self.tenant_userpool.add_domain("MyCognitoDomain",
             cognito_domain = cognito.CognitoDomainOptions(
-                domain_prefix = "my-guardrails-sample-app"
+                domain_prefix = userpool_client.user_pool_client_id
                 )
         )
         

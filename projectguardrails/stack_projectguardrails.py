@@ -63,6 +63,7 @@ class ProjectguardrailsStack(Stack):
         cognito = Cognito(
             self, "cognito-service",
             tenant_id_field.value_as_string,
+            bucket.bucket_name,
             )
             
         #CREATES THE DYNAMODB TABLE NAMED sourceipcount

@@ -1,0 +1,899 @@
+{
+  "version": "16.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CdkVPCStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CdkVPCStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CdkVPCStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CdkVPCStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/175be3664968b5f61c077a4d4527ff561502b6debb5d14ba8594b6fb5d9834f9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CdkVPCStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CdkVPCStack.assets"
+      ],
+      "metadata": {
+        "/CdkVPCStack/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/CdkVPCStack/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/CdkVPCStack/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/CdkVPCStack/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/CdkVPCStack/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/CdkVPCStack/VPC/apiGw/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCapiGwSecurityGroupB0B990E9"
+          }
+        ],
+        "/CdkVPCStack/VPC/apiGw/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCapiGw3E069C48"
+          }
+        ],
+        "/CdkVPCStack/Output": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output"
+          }
+        ],
+        "/CdkVPCStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CdkVPCStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/CdkVPCStack/Exports/Output{\"Ref\":\"VPCB9E5F0B4\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVPCB9E5F0B4BD23A326"
+          }
+        ],
+        "/CdkVPCStack/Exports/Output{\"Ref\":\"VPCPrivateSubnet1Subnet8BCA10E0\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVPCPrivateSubnet1Subnet8BCA10E01F79A1B7"
+          }
+        ],
+        "/CdkVPCStack/Exports/Output{\"Ref\":\"VPCPrivateSubnet2SubnetCFCDAA7A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVPCPrivateSubnet2SubnetCFCDAA7AB22CF85D"
+          }
+        ],
+        "/CdkVPCStack/Exports/Output{\"Ref\":\"VPCapiGw3E069C48\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVPCapiGw3E069C48496AB3AD"
+          }
+        ],
+        "/CdkVPCStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CdkVPCStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CdkVPCStack"
+    },
+    "ApplicationLayerStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationLayerStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationLayerStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationLayerStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48d7b45c85449ba43ee4ae842d4bcaac14ceb11e0a4bfd2414d00ae6c01dee24.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationLayerStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CdkVPCStack",
+        "ApplicationLayerStack.assets"
+      ],
+      "metadata": {
+        "/ApplicationLayerStack/dynamo-tasks": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "dynamotasks6C767D08"
+            }
+          }
+        ],
+        "/ApplicationLayerStack/dynamo-tasks/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dynamotasks6C767D08"
+          }
+        ],
+        "/ApplicationLayerStack/populate-dynamo-todotasks/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "populatedynamotodotasksCustomResourcePolicy8D6BE960"
+          }
+        ],
+        "/ApplicationLayerStack/populate-dynamo-todotasks/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "populatedynamotodotasksE86E050F"
+          }
+        ],
+        "/ApplicationLayerStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/ApplicationLayerStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/ApplicationLayerStack/dynamo-tenantusers": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "dynamotenantusers3700E473"
+            }
+          }
+        ],
+        "/ApplicationLayerStack/dynamo-tenantusers/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dynamotenantusers3700E473"
+          }
+        ],
+        "/ApplicationLayerStack/populate-tenantusers-dynamo-cr/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "populatetenantusersdynamocrCustomResourcePolicy8AFC47D3"
+          }
+        ],
+        "/ApplicationLayerStack/populate-tenantusers-dynamo-cr/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "populatetenantusersdynamocr48DFDD10"
+          }
+        ],
+        "/ApplicationLayerStack/getitemsfortenant-lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getitemsfortenantlambdaServiceRole1B98D048"
+          }
+        ],
+        "/ApplicationLayerStack/getitemsfortenant-lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getitemsfortenantlambdaServiceRoleDefaultPolicy81E66E41"
+          }
+        ],
+        "/ApplicationLayerStack/getitemsfortenant-lambda/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getitemsfortenantlambdaSecurityGroupC9F34D99"
+          }
+        ],
+        "/ApplicationLayerStack/getitemsfortenant-lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getitemsfortenantlambda41E26A18"
+          }
+        ],
+        "/ApplicationLayerStack/getalltenantitems-lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getalltenantitemslambdaServiceRoleD80B593C"
+          }
+        ],
+        "/ApplicationLayerStack/getalltenantitems-lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getalltenantitemslambdaServiceRoleDefaultPolicy9ED36B72"
+          }
+        ],
+        "/ApplicationLayerStack/getalltenantitems-lambda/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getalltenantitemslambdaSecurityGroupB2B35B89"
+          }
+        ],
+        "/ApplicationLayerStack/getalltenantitems-lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getalltenantitemslambda3D785ADC"
+          }
+        ],
+        "/ApplicationLayerStack/gettenantusers-lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gettenantuserslambdaServiceRole619D68B8"
+          }
+        ],
+        "/ApplicationLayerStack/gettenantusers-lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gettenantuserslambdaServiceRoleDefaultPolicy9B7DBAAF"
+          }
+        ],
+        "/ApplicationLayerStack/gettenantusers-lambda/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gettenantuserslambdaSecurityGroup61BEF36C"
+          }
+        ],
+        "/ApplicationLayerStack/gettenantusers-lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gettenantuserslambda81E0B100"
+          }
+        ],
+        "/ApplicationLayerStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/ApplicationLayerStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/ApplicationLayerStack/Exports/Output{\"Fn::GetAtt\":[\"getitemsfortenantlambda41E26A18\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+          }
+        ],
+        "/ApplicationLayerStack/Exports/Output{\"Fn::GetAtt\":[\"getalltenantitemslambda3D785ADC\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgetalltenantitemslambda3D785ADCArnC6CFFF7F"
+          }
+        ],
+        "/ApplicationLayerStack/Exports/Output{\"Fn::GetAtt\":[\"gettenantuserslambda81E0B100\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttgettenantuserslambda81E0B100Arn24BDD6A3"
+          }
+        ],
+        "/ApplicationLayerStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationLayerStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationLayerStack"
+    },
+    "ProjectGuardRailsStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ProjectGuardRailsStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ProjectGuardRailsStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ProjectGuardRailsStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce00caedc3441343e8d5b4f34258ecd32f6426fe21d89ad0444c8625a5845d0e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ProjectGuardRailsStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CdkVPCStack",
+        "ApplicationLayerStack",
+        "ProjectGuardRailsStack.assets"
+      ],
+      "metadata": {
+        "/ProjectGuardRailsStack/upload-object-name": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "uploadobjectname"
+          }
+        ],
+        "/ProjectGuardRailsStack/tenant-id-field": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tenantidfield"
+          }
+        ],
+        "/ProjectGuardRailsStack/error-count-threshold": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "errorcountthreshold"
+          }
+        ],
+        "/ProjectGuardRailsStack/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigateway1CA8D1FD"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayCloudWatchRole705B9419"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayAccount381D6807"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayDeploymentD467894F581be144ac660f907b78c1207d897644"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayDeploymentStageprodA9E86D8C"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayEndpointD8DC0074"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayproxyA1891744"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/ANY/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayproxyANYApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711ANYproxy0C2664D9"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/ANY/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayproxyANYApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711ANYproxy25975B17"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayproxyANYE4661AD1"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/ANY/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayANYApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711ANY79ECEA2F"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/ANY/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayANYApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711ANY5A62BE13"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayANYE6E16644"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetalltenantitemsE0419879"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/GET/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getalltenantitems": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetalltenantitemsGETApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711GETgetalltenantitemsA4651322"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/GET/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getalltenantitems": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetalltenantitemsGETApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711GETgetalltenantitems85D44508"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetalltenantitemsGETD3FDFC85"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetitemsfortenantB743384F"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/GET/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getitemsfortenant": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetitemsfortenantGETApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711GETgetitemsfortenantABBA1147"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/GET/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getitemsfortenant": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetitemsfortenantGETApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711GETgetitemsfortenantD47FEE3A"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetitemsfortenantGETA245F987"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetlistofusers6D053C0E"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/GET/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getlistofusers": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetlistofusersGETApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711GETgetlistofusers93EBB870"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/GET/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getlistofusers": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetlistofusersGETApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711GETgetlistofusers9D783BF8"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewaygetlistofusersGET5441F8B7"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/TenantItemsModell/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayTenantItemsModellF99AE150"
+          }
+        ],
+        "/ProjectGuardRailsStack/private-api-gateway/private-api-gateway/GetTenantUsersModel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "privateapigatewayGetTenantUsersModelAA4BBF63"
+          }
+        ],
+        "/ProjectGuardRailsStack/cognito-service/tenants-userpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoservicetenantsuserpool01E4FA51"
+          }
+        ],
+        "/ProjectGuardRailsStack/cognito-service/tenants-userpool/app-client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoservicetenantsuserpoolappclient8B6D2E30"
+          }
+        ],
+        "/ProjectGuardRailsStack/cognito-service/tenants-userpool/MyCognitoDomain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoservicetenantsuserpoolMyCognitoDomainB6FAC9CD"
+          }
+        ],
+        "/ProjectGuardRailsStack/cognito-service/populate-tenant-userpool_with_mock_tenant/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoservicepopulatetenantuserpoolwithmocktenantCustomResourcePolicyE39FDBF0"
+          }
+        ],
+        "/ProjectGuardRailsStack/cognito-service/populate-tenant-userpool_with_mock_tenant/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoservicepopulatetenantuserpoolwithmocktenantE51D9BEE"
+          }
+        ],
+        "/ProjectGuardRailsStack/cognito-service/tenantAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoservicetenantAuthorizer6C3BB570"
+          }
+        ],
+        "/ProjectGuardRailsStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/ProjectGuardRailsStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/ProjectGuardRailsStack/dynamodb-sourceipcounter": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "dynamodbsourceipcounterCEC72B7E"
+            }
+          }
+        ],
+        "/ProjectGuardRailsStack/dynamodb-sourceipcounter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dynamodbsourceipcounterCEC72B7E"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/jose-lambda-layer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionjoselambdalayer84CBA097"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/requests-lambda-layer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionrequestslambdalayer38D62F27"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/openapi-core-layer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionopenapicorelayer6C4C9402"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionguardrailslambdaServiceRole0CD3CE52"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionguardrailslambdaServiceRoleDefaultPolicy4DCEBAE7"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionguardrailslambdaSecurityGroup58864A0E"
+          }
+        ],
+        "/ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "guardrailslambdafunctionguardrailslambda0795D7BA"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayB53F57E5"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayCloudWatchRole757DC2FB"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayAccount22FA6779"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayDeploymentE6D66A2D223f76659adc2b64acb9cf1711a6e7ba"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayDeploymentStageprodF5E72BC4"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayEndpoint49C9AA27"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayproxy0B4DBADE"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/ANY/ApiPermission.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayproxyANYApiPermissionProjectGuardRailsStackpublicapigateway199EEAB9ANYproxy51B539A5"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/ANY/ApiPermission.Test.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayproxyANYApiPermissionTestProjectGuardRailsStackpublicapigateway199EEAB9ANYproxy1924DE00"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayproxyANY8F6B9C3C"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/ANY/ApiPermission.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayANYApiPermissionProjectGuardRailsStackpublicapigateway199EEAB9ANY6EE3D72D"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/ANY/ApiPermission.Test.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayANYApiPermissionTestProjectGuardRailsStackpublicapigateway199EEAB9ANY0501D012"
+          }
+        ],
+        "/ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "publicapigatewayANY7A2C95A2"
+          }
+        ],
+        "/ProjectGuardRailsStack/web-application-firewall/MyCfnIPSet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webapplicationfirewallMyCfnIPSet1CB1D8F7"
+          }
+        ],
+        "/ProjectGuardRailsStack/web-application-firewall/MyCfnWebACL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webapplicationfirewallMyCfnWebACL15E74513"
+          }
+        ],
+        "/ProjectGuardRailsStack/web-application-firewall/MyCfnWebACLAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webapplicationfirewallMyCfnWebACLAssociation77516AB0"
+          }
+        ],
+        "/ProjectGuardRailsStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/ProjectGuardRailsStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/ProjectGuardRailsStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ProjectGuardRailsStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ProjectGuardRailsStack"
+    }
+  }
+}

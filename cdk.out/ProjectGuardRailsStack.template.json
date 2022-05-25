@@ -1,0 +1,2313 @@
+{
+  "Parameters": {
+    "uploadobjectname": {
+      "Type": "String",
+      "Description": "The name of the Amazon S3 object, the OpenAPI json file."
+    },
+    "tenantidfield": {
+      "Type": "String",
+      "Description": "The name of the tenant id field defined in cognito."
+    },
+    "errorcountthreshold": {
+      "Type": "String",
+      "Description": "The number of times an unauthorized request can occur before being blocked by WAF"
+    },
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Resources": {
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/MyBucket/Resource"
+      }
+    },
+    "privateapigateway1CA8D1FD": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "EndpointConfiguration": {
+          "Types": [
+            "PRIVATE"
+          ],
+          "VpcEndpointIds": [
+            {
+              "Fn::ImportValue": "CdkVPCStack:ExportsOutputRefVPCapiGw3E069C48496AB3AD"
+            }
+          ]
+        },
+        "Name": "Private API Gateway to Lambda App Layer",
+        "Policy": {
+          "Statement": [
+            {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": "execute-api:/*"
+            },
+            {
+              "Action": "execute-api:Invoke",
+              "Condition": {
+                "StringNotEquals": {
+                  "aws:sourceVpc": {
+                    "Fn::ImportValue": "CdkVPCStack:ExportsOutputRefVPCB9E5F0B4BD23A326"
+                  }
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": "execute-api:/*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Resource"
+      }
+    },
+    "privateapigatewayCloudWatchRole705B9419": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/CloudWatchRole/Resource"
+      }
+    },
+    "privateapigatewayAccount381D6807": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "privateapigatewayCloudWatchRole705B9419",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "privateapigateway1CA8D1FD"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Account"
+      }
+    },
+    "privateapigatewayDeploymentD467894F581be144ac660f907b78c1207d897644": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "privateapigatewayproxyANYE4661AD1",
+        "privateapigatewayproxyA1891744",
+        "privateapigatewayANYE6E16644",
+        "privateapigatewaygetalltenantitemsGETD3FDFC85",
+        "privateapigatewaygetalltenantitemsE0419879",
+        "privateapigatewaygetitemsfortenantGETA245F987",
+        "privateapigatewaygetitemsfortenantB743384F",
+        "privateapigatewaygetlistofusersGET5441F8B7",
+        "privateapigatewaygetlistofusers6D053C0E",
+        "privateapigatewayGetTenantUsersModelAA4BBF63",
+        "privateapigatewayTenantItemsModellF99AE150"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Deployment/Resource"
+      }
+    },
+    "privateapigatewayDeploymentStageprodA9E86D8C": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "DeploymentId": {
+          "Ref": "privateapigatewayDeploymentD467894F581be144ac660f907b78c1207d897644"
+        },
+        "StageName": "prod"
+      },
+      "DependsOn": [
+        "privateapigatewayAccount381D6807"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/DeploymentStage.prod/Resource"
+      }
+    },
+    "privateapigatewayproxyA1891744": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "privateapigateway1CA8D1FD",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/Resource"
+      }
+    },
+    "privateapigatewayproxyANYApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711ANYproxy0C2664D9": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/",
+              {
+                "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/ANY/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY..{proxy+}"
+      }
+    },
+    "privateapigatewayproxyANYApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711ANYproxy25975B17": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/test-invoke-stage/*/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/ANY/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY..{proxy+}"
+      }
+    },
+    "privateapigatewayproxyANYE4661AD1": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Ref": "privateapigatewayproxyA1891744"
+        },
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/{proxy+}/ANY/Resource"
+      }
+    },
+    "privateapigatewayANYApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711ANY79ECEA2F": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/",
+              {
+                "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+              },
+              "/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/ANY/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY.."
+      }
+    },
+    "privateapigatewayANYApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711ANY5A62BE13": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/test-invoke-stage/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/ANY/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.ANY.."
+      }
+    },
+    "privateapigatewayANYE6E16644": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "privateapigateway1CA8D1FD",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/ANY/Resource"
+      }
+    },
+    "privateapigatewaygetalltenantitemsE0419879": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "privateapigateway1CA8D1FD",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "getalltenantitems",
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/Resource"
+      }
+    },
+    "privateapigatewaygetalltenantitemsGETApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711GETgetalltenantitemsA4651322": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetalltenantitemslambda3D785ADCArnC6CFFF7F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/",
+              {
+                "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+              },
+              "/GET/getalltenantitems"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/GET/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getalltenantitems"
+      }
+    },
+    "privateapigatewaygetalltenantitemsGETApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711GETgetalltenantitems85D44508": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetalltenantitemslambda3D785ADCArnC6CFFF7F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/test-invoke-stage/GET/getalltenantitems"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/GET/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getalltenantitems"
+      }
+    },
+    "privateapigatewaygetalltenantitemsGETD3FDFC85": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "privateapigatewaygetalltenantitemsE0419879"
+        },
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetalltenantitemslambda3D785ADCArnC6CFFF7F"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": {
+                "Ref": "privateapigatewayTenantItemsModellF99AE150"
+              }
+            },
+            "ResponseParameters": {
+              "method.response.header.Content-Type": true
+            },
+            "StatusCode": "200"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getalltenantitems/GET/Resource"
+      }
+    },
+    "privateapigatewaygetitemsfortenantB743384F": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "privateapigateway1CA8D1FD",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "getitemsfortenant",
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/Resource"
+      }
+    },
+    "privateapigatewaygetitemsfortenantGETApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711GETgetitemsfortenantABBA1147": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/",
+              {
+                "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+              },
+              "/GET/getitemsfortenant"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/GET/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getitemsfortenant"
+      }
+    },
+    "privateapigatewaygetitemsfortenantGETApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711GETgetitemsfortenantD47FEE3A": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/test-invoke-stage/GET/getitemsfortenant"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/GET/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getitemsfortenant"
+      }
+    },
+    "privateapigatewaygetitemsfortenantGETA245F987": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "privateapigatewaygetitemsfortenantB743384F"
+        },
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgetitemsfortenantlambda41E26A18Arn396B254F"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": {
+                "Ref": "privateapigatewayTenantItemsModellF99AE150"
+              }
+            },
+            "ResponseParameters": {
+              "method.response.header.Content-Type": true
+            },
+            "StatusCode": "200"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getitemsfortenant/GET/Resource"
+      }
+    },
+    "privateapigatewaygetlistofusers6D053C0E": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "privateapigateway1CA8D1FD",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "getlistofusers",
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/Resource"
+      }
+    },
+    "privateapigatewaygetlistofusersGETApiPermissionProjectGuardRailsStackprivateapigatewayAB6F5711GETgetlistofusers93EBB870": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgettenantuserslambda81E0B100Arn24BDD6A3"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/",
+              {
+                "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+              },
+              "/GET/getlistofusers"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/GET/ApiPermission.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getlistofusers"
+      }
+    },
+    "privateapigatewaygetlistofusersGETApiPermissionTestProjectGuardRailsStackprivateapigatewayAB6F5711GETgetlistofusers9D783BF8": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgettenantuserslambda81E0B100Arn24BDD6A3"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "privateapigateway1CA8D1FD"
+              },
+              "/test-invoke-stage/GET/getlistofusers"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/GET/ApiPermission.Test.ProjectGuardRailsStackprivateapigatewayAB6F5711.GET..getlistofusers"
+      }
+    },
+    "privateapigatewaygetlistofusersGET5441F8B7": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "privateapigatewaygetlistofusers6D053C0E"
+        },
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::ImportValue": "ApplicationLayerStack:ExportsOutputFnGetAttgettenantuserslambda81E0B100Arn24BDD6A3"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": {
+                "Ref": "privateapigatewayGetTenantUsersModelAA4BBF63"
+              }
+            },
+            "ResponseParameters": {
+              "method.response.header.Content-Type": true
+            },
+            "StatusCode": "500"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/Default/getlistofusers/GET/Resource"
+      }
+    },
+    "privateapigatewayTenantItemsModellF99AE150": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "ContentType": "application/json",
+        "Name": "TenantItemsModell",
+        "Schema": {
+          "additionalProperties": false,
+          "properties": {
+            "Items": {
+              "items": {
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  },
+                  "tenant_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "task_description": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "title": "tenantitems",
+          "type": "object"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/TenantItemsModell/Resource"
+      }
+    },
+    "privateapigatewayGetTenantUsersModelAA4BBF63": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "privateapigateway1CA8D1FD"
+        },
+        "ContentType": "application/json",
+        "Name": "GetTenantUsersModel",
+        "Schema": {
+          "additionalProperties": false,
+          "properties": {
+            "Items": {
+              "items": {
+                "properties": {
+                  "tenant_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "user_email": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "title": "tenantinfo",
+          "type": "object"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/private-api-gateway/private-api-gateway/GetTenantUsersModel/Resource"
+      }
+    },
+    "cognitoservicetenantsuserpool01E4FA51": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "Schema": [
+          {
+            "AttributeDataType": "Number",
+            "Mutable": false,
+            "Name": {
+              "Ref": "tenantidfield"
+            },
+            "NumberAttributeConstraints": {
+              "MaxValue": "999",
+              "MinValue": "1"
+            }
+          }
+        ],
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserPoolName": "tenants",
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/cognito-service/tenants-userpool/Resource"
+      }
+    },
+    "cognitoservicetenantsuserpoolappclient8B6D2E30": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "cognitoservicetenantsuserpool01E4FA51"
+        },
+        "AllowedOAuthFlows": [
+          "implicit"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "openid"
+        ],
+        "CallbackURLs": [
+          "http://localhost:5000/callbackmockurl"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/cognito-service/tenants-userpool/app-client/Resource"
+      }
+    },
+    "cognitoservicetenantsuserpoolMyCognitoDomainB6FAC9CD": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": {
+          "Ref": "cognitoservicetenantsuserpoolappclient8B6D2E30"
+        },
+        "UserPoolId": {
+          "Ref": "cognitoservicetenantsuserpool01E4FA51"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/cognito-service/tenants-userpool/MyCognitoDomain/Resource"
+      }
+    },
+    "cognitoservicepopulatetenantuserpoolwithmocktenantCustomResourcePolicyE39FDBF0": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:AdminCreateUser",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "cognitoservicepopulatetenantuserpoolwithmocktenantCustomResourcePolicyE39FDBF0",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/cognito-service/populate-tenant-userpool_with_mock_tenant/CustomResourcePolicy/Resource"
+      }
+    },
+    "cognitoservicepopulatetenantuserpoolwithmocktenantE51D9BEE": {
+      "Type": "Custom::AWS",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"action\":\"adminCreateUser\",\"service\":\"CognitoIdentityServiceProvider\",\"parameters\":{\"UserPoolId\":\"",
+              {
+                "Ref": "cognitoservicetenantsuserpool01E4FA51"
+              },
+              "\",\"Username\":\"tenant_111\",\"TemporaryPassword\":\"Password123!\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"tenant_111@example.com\"},{\"Name\":\"name\",\"Value\":\"tenant_111\"},{\"Name\":\"custom:",
+              {
+                "Ref": "tenantidfield"
+              },
+              "\",\"Value\":\"111\"}]},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "cognitoservicetenantsuserpool01E4FA51"
+              },
+              "\"}}"
+            ]
+          ]
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "cognitoservicepopulatetenantuserpoolwithmocktenantCustomResourcePolicyE39FDBF0"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/cognito-service/populate-tenant-userpool_with_mock_tenant/Resource/Default"
+      }
+    },
+    "cognitoservicetenantAuthorizer6C3BB570": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "Name": "ProjectGuardRailsStackcognitoservicetenantAuthorizer2AAD0A78",
+        "RestApiId": {
+          "Ref": "publicapigatewayB53F57E5"
+        },
+        "Type": "COGNITO_USER_POOLS",
+        "IdentitySource": "method.request.header.Authorization",
+        "ProviderARNs": [
+          {
+            "Fn::GetAtt": [
+              "cognitoservicetenantsuserpool01E4FA51",
+              "Arn"
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/cognito-service/tenantAuthorizer/Resource"
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource"
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "4a575666d1c2c6412590d2a56f328e040a81ad1ef59aecee31ae9b393d05f659.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "Timeout": 120
+      },
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+        "aws:asset:path": "asset.4a575666d1c2c6412590d2a56f328e040a81ad1ef59aecee31ae9b393d05f659",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "dynamodbsourceipcounterCEC72B7E": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "source_ip",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "source_ip",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "GuardrailsSourceIpCounter"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/dynamodb-sourceipcounter/Resource"
+      }
+    },
+    "guardrailslambdafunctionjoselambdalayer84CBA097": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "a3881f40bcc15fcd058637f82417cda5609f94a41719b91bcccff8135125c6d0.zip"
+        },
+        "CompatibleRuntimes": [
+          "python3.9"
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/jose-lambda-layer/Resource",
+        "aws:asset:path": "asset.a3881f40bcc15fcd058637f82417cda5609f94a41719b91bcccff8135125c6d0",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Content"
+      }
+    },
+    "guardrailslambdafunctionrequestslambdalayer38D62F27": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "11d2e349d21815eea4b035677055fb14108d95b1c9a8edd427ea8e97eddfdc5e.zip"
+        },
+        "CompatibleRuntimes": [
+          "python3.9"
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/requests-lambda-layer/Resource",
+        "aws:asset:path": "asset.11d2e349d21815eea4b035677055fb14108d95b1c9a8edd427ea8e97eddfdc5e",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Content"
+      }
+    },
+    "guardrailslambdafunctionopenapicorelayer6C4C9402": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "7d97db2e852f9d3b11cdb5532eee59c5ce4269052250a5d4faea05184bdbda0c.zip"
+        },
+        "CompatibleRuntimes": [
+          "python3.9"
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/openapi-core-layer/Resource",
+        "aws:asset:path": "asset.7d97db2e852f9d3b11cdb5532eee59c5ce4269052250a5d4faea05184bdbda0c",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Content"
+      }
+    },
+    "guardrailslambdafunctionguardrailslambdaServiceRole0CD3CE52": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AWSWAFFullAccess"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/ServiceRole/Resource"
+      }
+    },
+    "guardrailslambdafunctionguardrailslambdaServiceRoleDefaultPolicy4DCEBAE7": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "dynamodbsourceipcounterCEC72B7E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "guardrailslambdafunctionguardrailslambdaServiceRoleDefaultPolicy4DCEBAE7",
+        "Roles": [
+          {
+            "Ref": "guardrailslambdafunctionguardrailslambdaServiceRole0CD3CE52"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "guardrailslambdafunctionguardrailslambdaSecurityGroup58864A0E": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function ProjectGuardRailsStackguardrailslambdafunctionguardrailslambdaA24F1F63",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "CdkVPCStack:ExportsOutputRefVPCB9E5F0B4BD23A326"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/SecurityGroup/Resource"
+      }
+    },
+    "guardrailslambdafunctionguardrailslambda0795D7BA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "c7d7cd4bc96e7ecccfd1d7cce1c344842ab795d71f4f96c146f050cbd46d2b5e.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "guardrailslambdafunctionguardrailslambdaServiceRole0CD3CE52",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "cognito_region": {
+              "Ref": "AWS::Region"
+            },
+            "cognito_userpool_id": {
+              "Ref": "cognitoservicetenantsuserpool01E4FA51"
+            },
+            "private_api_gateway_endpoint": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "privateapigateway1CA8D1FD"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+                  },
+                  "/"
+                ]
+              ]
+            },
+            "bucket_name": {
+              "Ref": "MyBucketF68F3FF0"
+            },
+            "object_name": {
+              "Ref": "uploadobjectname"
+            },
+            "tenant_id_field": {
+              "Ref": "tenantidfield"
+            },
+            "ipset_name": "",
+            "error_count_threshold": {
+              "Ref": "errorcountthreshold"
+            }
+          }
+        },
+        "Handler": "guardrails_lambda.lambda_handler",
+        "Layers": [
+          {
+            "Ref": "guardrailslambdafunctionjoselambdalayer84CBA097"
+          },
+          {
+            "Ref": "guardrailslambdafunctionrequestslambdalayer38D62F27"
+          },
+          {
+            "Ref": "guardrailslambdafunctionopenapicorelayer6C4C9402"
+          }
+        ],
+        "Runtime": "python3.9",
+        "Timeout": 10,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "guardrailslambdafunctionguardrailslambdaSecurityGroup58864A0E",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "CdkVPCStack:ExportsOutputRefVPCPrivateSubnet1Subnet8BCA10E01F79A1B7"
+            },
+            {
+              "Fn::ImportValue": "CdkVPCStack:ExportsOutputRefVPCPrivateSubnet2SubnetCFCDAA7AB22CF85D"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "guardrailslambdafunctionguardrailslambdaServiceRoleDefaultPolicy4DCEBAE7",
+        "guardrailslambdafunctionguardrailslambdaServiceRole0CD3CE52"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/guardrails-lambda-function/guardrails-lambda/Resource",
+        "aws:asset:path": "asset.c7d7cd4bc96e7ecccfd1d7cce1c344842ab795d71f4f96c146f050cbd46d2b5e",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "publicapigatewayB53F57E5": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "Public API Gateway to GuardRails Lambda"
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Resource"
+      }
+    },
+    "publicapigatewayCloudWatchRole757DC2FB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/CloudWatchRole/Resource"
+      }
+    },
+    "publicapigatewayAccount22FA6779": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "publicapigatewayCloudWatchRole757DC2FB",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "publicapigatewayB53F57E5"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Account"
+      }
+    },
+    "publicapigatewayDeploymentE6D66A2D223f76659adc2b64acb9cf1711a6e7ba": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "publicapigatewayB53F57E5"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "publicapigatewayproxyANY8F6B9C3C",
+        "publicapigatewayproxy0B4DBADE",
+        "publicapigatewayANY7A2C95A2"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Deployment/Resource"
+      }
+    },
+    "publicapigatewayDeploymentStageprodF5E72BC4": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "publicapigatewayB53F57E5"
+        },
+        "DeploymentId": {
+          "Ref": "publicapigatewayDeploymentE6D66A2D223f76659adc2b64acb9cf1711a6e7ba"
+        },
+        "StageName": "prod"
+      },
+      "DependsOn": [
+        "publicapigatewayAccount22FA6779"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/DeploymentStage.prod/Resource"
+      }
+    },
+    "publicapigatewayproxy0B4DBADE": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "publicapigatewayB53F57E5",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "publicapigatewayB53F57E5"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/Resource"
+      }
+    },
+    "publicapigatewayproxyANYApiPermissionProjectGuardRailsStackpublicapigateway199EEAB9ANYproxy51B539A5": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "guardrailslambdafunctionguardrailslambda0795D7BA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "publicapigatewayB53F57E5"
+              },
+              "/",
+              {
+                "Ref": "publicapigatewayDeploymentStageprodF5E72BC4"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/ANY/ApiPermission.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY..{proxy+}"
+      }
+    },
+    "publicapigatewayproxyANYApiPermissionTestProjectGuardRailsStackpublicapigateway199EEAB9ANYproxy1924DE00": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "guardrailslambdafunctionguardrailslambda0795D7BA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "publicapigatewayB53F57E5"
+              },
+              "/test-invoke-stage/*/*"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/ANY/ApiPermission.Test.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY..{proxy+}"
+      }
+    },
+    "publicapigatewayproxyANY8F6B9C3C": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Ref": "publicapigatewayproxy0B4DBADE"
+        },
+        "RestApiId": {
+          "Ref": "publicapigatewayB53F57E5"
+        },
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "cognitoservicetenantAuthorizer6C3BB570"
+        },
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "guardrailslambdafunctionguardrailslambda0795D7BA",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/{proxy+}/ANY/Resource"
+      }
+    },
+    "publicapigatewayANYApiPermissionProjectGuardRailsStackpublicapigateway199EEAB9ANY6EE3D72D": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "guardrailslambdafunctionguardrailslambda0795D7BA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "publicapigatewayB53F57E5"
+              },
+              "/",
+              {
+                "Ref": "publicapigatewayDeploymentStageprodF5E72BC4"
+              },
+              "/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/ANY/ApiPermission.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY.."
+      }
+    },
+    "publicapigatewayANYApiPermissionTestProjectGuardRailsStackpublicapigateway199EEAB9ANY0501D012": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "guardrailslambdafunctionguardrailslambda0795D7BA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "publicapigatewayB53F57E5"
+              },
+              "/test-invoke-stage/*/"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/ANY/ApiPermission.Test.ProjectGuardRailsStackpublicapigateway199EEAB9.ANY.."
+      }
+    },
+    "publicapigatewayANY7A2C95A2": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "publicapigatewayB53F57E5",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "publicapigatewayB53F57E5"
+        },
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "cognitoservicetenantAuthorizer6C3BB570"
+        },
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "guardrailslambdafunctionguardrailslambda0795D7BA",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/public-api-gateway/public-api-gateway/Default/ANY/Resource"
+      }
+    },
+    "webapplicationfirewallMyCfnIPSet1CB1D8F7": {
+      "Type": "AWS::WAFv2::IPSet",
+      "Properties": {
+        "Addresses": [],
+        "IPAddressVersion": "IPV4",
+        "Scope": "REGIONAL",
+        "Name": "GuardRailsIpSet"
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/web-application-firewall/MyCfnIPSet"
+      }
+    },
+    "webapplicationfirewallMyCfnWebACL15E74513": {
+      "Type": "AWS::WAFv2::WebACL",
+      "Properties": {
+        "DefaultAction": {
+          "Allow": {
+            "CustomRequestHandling": {
+              "InsertHeaders": [
+                {
+                  "Name": "name",
+                  "Value": "value"
+                }
+              ]
+            }
+          }
+        },
+        "Scope": "REGIONAL",
+        "VisibilityConfig": {
+          "CloudWatchMetricsEnabled": false,
+          "MetricName": "guardrailsrequests",
+          "SampledRequestsEnabled": false
+        },
+        "Description": "description",
+        "Name": "GuardRailsWebACL",
+        "Rules": [
+          {
+            "Action": {
+              "Block": {
+                "CustomResponse": {
+                  "ResponseCode": 403
+                }
+              }
+            },
+            "Name": "IPSetMatchRule",
+            "Priority": 123,
+            "Statement": {
+              "IPSetReferenceStatement": {
+                "Arn": {
+                  "Fn::GetAtt": [
+                    "webapplicationfirewallMyCfnIPSet1CB1D8F7",
+                    "Arn"
+                  ]
+                }
+              }
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": false,
+              "MetricName": "metricName",
+              "SampledRequestsEnabled": false
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/web-application-firewall/MyCfnWebACL"
+      }
+    },
+    "webapplicationfirewallMyCfnWebACLAssociation77516AB0": {
+      "Type": "AWS::WAFv2::WebACLAssociation",
+      "Properties": {
+        "ResourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              "::/restapis/",
+              {
+                "Ref": "publicapigatewayB53F57E5"
+              },
+              "/stages/",
+              {
+                "Ref": "publicapigatewayDeploymentStageprodF5E72BC4"
+              }
+            ]
+          ]
+        },
+        "WebACLArn": {
+          "Fn::GetAtt": [
+            "webapplicationfirewallMyCfnWebACL15E74513",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/web-application-firewall/MyCfnWebACLAssociation"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/11SyW7bMBD9ltxpNrGB9qwoaFHARQW7y9EYUxOXNckRuNRVBf57uci2kNO8efPIWdf86T1/fICLW4n+vFLyyKe9B3Fm7avpwIJGj5al+GFyGz49B3FGn4MzquYZHEYGgzyBxwuMfNqCPvawQ+ebQWb9AjZCUDCeveCgaNRoyocLL1VwwsxVkJ5SsAJzFtZZ+jtemfnjir+g/0V9pmZ0j1CPqgQqoJORnr47tB2Rck1Iciv/pUZzdTcvMgmaTztSNVG2HSkpxjKdgiJTpVM+ZQqtls5JMmwvzUmhJ/MxGOEzcwNJeMNbGNH+QOvmwNKPTNRC+XQtNUtu+ApaJecRvmGu7gtpkGYpqExkbnMA59A73mTD+tGApj4dwTc41q4LiAzFOl0GimClHz9ZCkPZz5KI7AKvf9ZlEp+7fT2Tn3hs2u0dpTwkJOTmY8z01+CH4JkIzpM+2HllqaCLawt33/Ubd7H6Un0+ljR1tlS0ZHpZkrFuTHs17zb8A396fPjtpFzZdIVSI99V+x8EJgG5DQMAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "ProjectGuardRailsStack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "privateapigatewayEndpointD8DC0074": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "privateapigateway1CA8D1FD"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "privateapigatewayDeploymentStageprodA9E86D8C"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "publicapigatewayEndpoint49C9AA27": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "publicapigatewayB53F57E5"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "publicapigatewayDeploymentStageprodF5E72BC4"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}
