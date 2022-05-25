@@ -52,6 +52,8 @@ cdk deploy --all --parameters ProjectGuardRailsStack:uploadobjectname=OpenAPIfil
 
 Upon deployment of the CDK stacks, an S3 bucket has been created for you to upload your OpenAPI file as an S3 object. 
 
+To retrieve the OpenAPI file based on the sample application, export an OpenAPI file written in JSON from the Private API Gateway in your console. 
+
 Upload your OpenAPI file to the S3 bucket that has been provisioned and ensure that your filename follows the parameter you have entered in your cdk deploy command.
 
 As per default value, your OpenAPI file should be named "OpenAPIFile.json"
